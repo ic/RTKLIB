@@ -1976,43 +1976,6 @@ static int stateftp(ftp_t *ftp)
  {
      return unixsvr?unixsvr->svr.state:0;
  }
- /* generate binary message from a hex encoded string--------------------------*/
- static int gen_hex(const char *msg, unsigned char *buff)
-  {
-      int n=0;
-      const char *p,*word;
-      unsigned int nib,nibn;
-      char mbuff[1024];
-
-      strncpy(mbuff,msg,sizeof(mbuff)-1);
-      mbuff[sizeof(mbuff)-1]='\0';
-
-      for(word=strtok(mbuff," \t\r\n");word;word=strtok(NULL," \t\r\n")) {
-          nib=0;
-          nibn=strlen(word)%2;
-          if (nibn) buff[n++]=0;
-          for (p=word;*p;p++) {
-              if ('0'<=*p&&*p<='9') nib=*p-'0';
-              else if ('A'<=*p&&*p<='F') nib=*p-'A'+0x0a;
-              else if ('a'<=*p&&*p<='f') nib=*p-'a'+0x0a;
-              else {
-                  tracet(3,"gen_hex: incorrect symbol c=%c msg=%s",*p,msg);
-                  return 0;
-              }
-              nib&=0x0f;
-              if (nibn==0) {
-                  buff[n++]=nib;
-                  nibn=1;
-              }
-              else {
-                  buff[n-1]=nib|buff[n-1]<<4;
-                  nibn=0;
-              }
-          }
-      }
-
-      return n;
-  }
 /* initialize stream environment -----------------------------------------------
 * initialize stream environment
 * args   : none
